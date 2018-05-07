@@ -7,38 +7,39 @@ package br.com.uol.testebackend.player;
 import br.com.uol.testebackend.domain.codename.AvangersGroup;
 import br.com.uol.testebackend.domain.codename.Codename;
 import br.com.uol.testebackend.domain.codename.JusticeLeagueGroup;
+import br.com.uol.testebackend.infra.config.Boot;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import java.util.List;
+import javax.inject.Inject;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Testa os processos de serializacao dos tipos de grupos em xml e json
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Boot.class)
 public class PlayerGroupSerializationTest {
     
     private final String AVANGERS_TEMPLATE_JSON = "{\"vingadores\":[{\"codinome\":\"Hulk\"},{\"codinome\":\"Capitão América\"}]}";
     private final String JUSTICE_LEAGUE_TEMPLATE_XML = "<liga_da_justica><codinomes><codinome>Lanterna Verde</codinome><codinome>Flash</codinome></codinomes></liga_da_justica>";
-    private ObjectMapper jsonMapper;
-    private XmlMapper xmlMapper;
+    
+    
+    @Inject @Qualifier("jsonMapper") private ObjectMapper jsonMapper;
+    @Inject @Qualifier("xmlMapper") private XmlMapper xmlMapper;
     
     @Before
     public void setUp() {
-        jsonMapper = new ObjectMapper();
-        jsonMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-        jsonMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-        jsonMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        
-        xmlMapper = new XmlMapper();
-        xmlMapper.setDefaultUseWrapper(false);
         
     }
     /**
