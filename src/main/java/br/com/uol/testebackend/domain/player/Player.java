@@ -65,5 +65,19 @@ public class Player implements Serializable {
         this.codename = codename;
     }
 
-    
+    public Integer getIdPlayer() {
+        return idPlayer;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getCodename() {
+        return codename;
+    }
 }

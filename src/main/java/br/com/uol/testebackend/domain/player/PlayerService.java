@@ -1,7 +1,10 @@
 package br.com.uol.testebackend.domain.player;
 
+import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,4 +26,25 @@ public class PlayerService {
             return HttpStatus.OK;
         }
     } 
+    
+    public  ResponseEntity<List<Player>> getAll(){
+        List<Player> players = playerRepository.findAll();
+        
+        if(players == null || players.isEmpty()){
+            return new ResponseEntity<List<Player>>(HttpStatus.NO_CONTENT);
+        }else{
+            return new ResponseEntity<List<Player>>(players, HttpStatus.OK);
+        }
+    }
+    
+    public ResponseEntity<Player> getById(Integer id){
+        Optional<Player> player = playerRepository.findById(id);
+        
+        if(player.isPresent()){
+            return new ResponseEntity<Player>(player.get(),HttpStatus.OK);
+        }else{
+            return new ResponseEntity<Player>(player.get(),HttpStatus.NO_CONTENT);
+        }
+        
+    }
 }
