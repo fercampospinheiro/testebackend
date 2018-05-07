@@ -16,12 +16,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  *
- * @author fernando
+ * Teste do repositorio de jogadores
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @SpringBootTest(classes = Boot.class)
-public class shouldSearchCodenamesAlreadyUsed {
+public class PlayerRepositoryTest {
     
     @Inject private PlayerRepository playerRepository;
     
@@ -33,7 +33,9 @@ public class shouldSearchCodenamesAlreadyUsed {
     }
     
     
-    
+    /**
+     * Deve trazer todos os codinomes já usados
+     */
     @Test
     public void shouldSearchCodenamesAlreadyUsed() {
         List<Codename> codenames = playerRepository.searchAllAlreadyUsed();

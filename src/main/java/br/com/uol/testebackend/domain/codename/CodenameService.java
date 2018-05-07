@@ -1,7 +1,7 @@
 package br.com.uol.testebackend.domain.codename;
 
+import br.com.uol.testebackend.domain.player.PlayerRepository;
 import br.com.uol.testebackend.domain.player.TypeGroup;
-import br.com.uol.testebackend.domain.player.PlayerRepository1;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CodenameService {
 
     @Inject CodenameRepository codenameRepository;
-    @Inject PlayerRepository1 playerRepository;
+    @Inject PlayerRepository playerRepository;
     
     /**
      * Tenta obter um codinome livre, se nao encontra retorna null
