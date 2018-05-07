@@ -3,33 +3,28 @@
  */
 package br.com.uol.testebackend.domain.codename;
 
-import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import br.com.uol.testebackend.domain.player.TypeGroup;
-import br.com.uol.testebackend.infra.config.AppConfig;
+import br.com.uol.testebackend.infra.config.ClientHttpUrl;
 import java.io.IOException;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Teste do repositorio de codinomes
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=AppConfig.class)
 public class CodenameRepositoryTest {
     
-    @Inject private CodenameRepository codenameRepository; 
+    private CodenameRepository codenameRepository; 
     
     public CodenameRepositoryTest() {
     }
     
     @Before
     public void setUp() {
+        codenameRepository = new CodenameRepository(new ClientHttpUrl());
     }
     
     @After

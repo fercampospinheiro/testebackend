@@ -46,6 +46,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-devtools</artifactId>
     </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>5.0.5.RELEASE</version>
+        <scope>test</scope>
+      <type>jar</type>
+    </dependency>
     
     <!-- H2 - BANCO MEMORIA -->
     <dependency>
@@ -92,8 +99,8 @@
     <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.3.4</version>
     </dependency>
+    
 
     <!-- JSTL -->
     <dependency>
