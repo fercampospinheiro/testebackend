@@ -28,7 +28,7 @@ public class PlayerRepositoryTest {
     
     @Before
     public void setUp() {
-        Player player = new Player("fercampospinheiro@gmail.com", "11951662366", "batman", TypeGroup.AVANGERS);
+        Player player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS);
         playerRepository.save(player);
     }
     
@@ -41,7 +41,7 @@ public class PlayerRepositoryTest {
         List<Codename> codenames = playerRepository.searchAllAlreadyUsed();
         
         assertThat(codenames.size(), is(1));
-        assertThat(codenames.get(0).getCodinome(), is("batman"));
+        assertThat(codenames.get(0).getCodinome(), is("Thor"));
     }
     
     @After

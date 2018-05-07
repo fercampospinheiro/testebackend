@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Servico responsavel por obter os codinomes para os jogadores
  */
-@Service
+@Service("codenameService")
 public class CodenameService {
 
     @Inject CodenameRepository codenameRepository;
