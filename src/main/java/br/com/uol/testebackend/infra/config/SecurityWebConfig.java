@@ -2,6 +2,7 @@ package br.com.uol.testebackend.infra.config;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -17,11 +18,7 @@ public class SecurityWebConfig extends WebSecurityConfigurerAdapter {
     http
         .authorizeRequests()
             .antMatchers("/resources/**", "/webjars/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/").permitAll()
-            .antMatchers(HttpMethod.GET, "/players").permitAll()
-            .antMatchers(HttpMethod.GET, "/players/form").permitAll()
-            .antMatchers(HttpMethod.GET, "/player/form").permitAll()
-            .antMatchers(HttpMethod.GET, "/player/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/","/players","/players/form","/player/**").permitAll()
             .antMatchers(HttpMethod.POST, "/player").permitAll()
             .antMatchers(HttpMethod.PUT, "/player").permitAll()
             .antMatchers(HttpMethod.DELETE, "/player").permitAll()
@@ -30,4 +27,10 @@ public class SecurityWebConfig extends WebSecurityConfigurerAdapter {
         .httpBasic();
   }
  
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(HttpMethod.POST,"/player/**");
+    }
+  
+  
 }
