@@ -7,24 +7,31 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import br.com.uol.testebackend.domain.player.TypeGroup;
-import br.com.uol.testebackend.infra.config.ClientHttpUrl;
+import br.com.uol.testebackend.infra.config.Boot;
 import java.io.IOException;
+import javax.inject.Inject;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Teste do repositorio de codinomes
  */
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@SpringBootTest(classes = Boot.class)
 public class CodenameRepositoryTest {
     
-    private CodenameRepository codenameRepository; 
+    @Inject private CodenameRepository codenameRepository; 
     
     public CodenameRepositoryTest() {
     }
     
     @Before
     public void setUp() {
-        codenameRepository = new CodenameRepository(new ClientHttpUrl());
     }
     
     @After

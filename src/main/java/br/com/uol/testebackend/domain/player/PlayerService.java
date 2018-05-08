@@ -16,35 +16,31 @@ public class PlayerService {
     
     @Inject private PlayerRepository playerRepository;
     
-    public HttpStatus register(Player player){
-        Player playerSaved = playerRepository.save(player);
-        
-        if(playerSaved == null){
-            return HttpStatus.NOT_MODIFIED;
-        }
-        else{
-            return HttpStatus.OK;
-        }
+    public Optional<Player> registerOrUpdate(Player player){
+        return Optional.ofNullable(playerRepository.save(player));
     } 
     
-    public  ResponseEntity<List<Player>> getAll(){
-        List<Player> players = playerRepository.findAll();
-        
-        if(players == null || players.isEmpty()){
-            return new ResponseEntity<List<Player>>(HttpStatus.NO_CONTENT);
-        }else{
-            return new ResponseEntity<List<Player>>(players, HttpStatus.OK);
-        }
+    public  List<Player> getAll(){
+        return playerRepository.findAll();
     }
     
     public ResponseEntity<Player> getById(Integer id){
         Optional<Player> player = playerRepository.findById(id);
         
         if(player.isPresent()){
-            return new ResponseEntity<Player>(player.get(),HttpStatus.OK);
+            return new ResponseEntity<>(player.get(),HttpStatus.OK);
         }else{
-            return new ResponseEntity<Player>(player.get(),HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(player.get(),HttpStatus.NO_CONTENT);
         }
         
     }
+    
+    public Boolean delete(Player player){
+        if(playerRepository.existsById(player.getIdPlayer())){
+            playerRepository.delete(player);
+            return true;
+        }
+        return false;
+    }
+    
 }
