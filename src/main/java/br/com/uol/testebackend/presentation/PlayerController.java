@@ -8,8 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 public class PlayerController {
-        /**
+    
+    @GetMapping("/")
+    public String home(){
+        return playerForm();
+    }
+    
+    /**
      * Carrega o fromulario da lista de jogadores
+     * 
      */
     @GetMapping("/players/form")
     public String playersForm(){

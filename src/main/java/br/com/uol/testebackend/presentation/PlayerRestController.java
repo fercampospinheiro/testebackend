@@ -71,14 +71,14 @@ public class PlayerRestController {
 
     }
     
-    @GetMapping(value = "/player/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+    @GetMapping(value = "/player/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Player> getById(@PathVariable Integer id) {
          Player player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS , "Fernando Campos Pinheiro");
          return new ResponseEntity<>(player,HttpStatus.OK);
         //return playerService.getById(id);
     }
     
-    @DeleteMapping(value = "/player", produces = MediaType.APPLICATION_XML_VALUE)
+    @DeleteMapping(value = "/player", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Player> delete(@RequestBody Player player) {
          if(playerService.delete(player)) return new ResponseEntity<>(HttpStatus.OK) ;
          return new ResponseEntity<>(HttpStatus.NO_CONTENT);

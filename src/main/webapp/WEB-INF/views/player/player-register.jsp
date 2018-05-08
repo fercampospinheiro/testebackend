@@ -10,8 +10,46 @@
 <link href="/js/player-register.css"/>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.amd.min.js"></script>
+
 <!------ Include the above in your HEAD tag ---------->
 <script>
+    
+    var messages = {};
+    
+    message.code204= function(message) {
+        alert(message);
+    }
+    
+    message.code200 = function(message) {
+        alert(message);
+    }
+    
+    message.code400 = function(message) {
+        alert(message);
+    }
+    
+    message.code404 = function(message) {
+        alert(message);
+    }
+
+   var callUrl = function(url,json, httpMethod){   
+        $.ajax(url, {
+        type: httpMethod,
+        data: json,
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        success: function(data){
+            alert('200 status code!');
+        },
+        statusCode: {
+             204: message.code204("200 - Sucesso"),   
+             400: message.code400("404 - nao encontrado"),
+             404: message.code404("400 - nao encosasaso")
+          }
+     });
+   }
+   
     $(document).ready(function () {
 
 	$('.star').on('click', function () {
@@ -32,8 +70,11 @@
       }
     });
 
+    callUrl("http://localhost:8080/players","","GET");
+
  }); 
 </script>
+   
 
 <div class="container">
 	<div class="row">
