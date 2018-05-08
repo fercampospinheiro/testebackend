@@ -34,7 +34,7 @@ public class CodenameServiceTest {
     
     @Before
     public void setUp() {
-        player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS);
+        player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS , "Fernando");
         playerRepository.save(player);
     }
     

@@ -35,6 +35,11 @@ public class Player implements Serializable {
     
     @NotNull
     @NotBlank
+    @Size(max = 200)
+    private String name;
+    
+    @NotNull
+    @NotBlank
     @Size(max = 12)
     private String phone;
     
@@ -50,11 +55,12 @@ public class Player implements Serializable {
     public Player() {
     }
     
-    public Player(String email, String phone, String codename, TypeGroup playerGroup) {
+    public Player(String email, String phone, String codename, TypeGroup playerGroup, String name) {
         this.email = email;
         this.phone = phone;
         this.codename = codename;
         this.playerGroup = playerGroup;
+        this.name = name;
     }
 
     public TypeGroup getPlayerGroup() {
@@ -79,5 +85,9 @@ public class Player implements Serializable {
 
     public String getCodename() {
         return codename;
+    }
+
+    public String getName() {
+        return name;
     }
 }

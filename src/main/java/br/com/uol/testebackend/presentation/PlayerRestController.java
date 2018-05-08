@@ -73,7 +73,7 @@ public class PlayerRestController {
     
     @GetMapping(value = "/player/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Player> getById(@PathVariable Integer id) {
-         Player player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS);
+         Player player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS , "Fernando Campos Pinheiro");
          return new ResponseEntity<>(player,HttpStatus.OK);
         //return playerService.getById(id);
     }

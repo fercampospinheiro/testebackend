@@ -28,7 +28,7 @@ public class PlayerRepositoryTest {
     
     @Before
     public void setUp() {
-        Player player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS);
+        Player player = new Player("fercampospinheiro@gmail.com", "11951662366", "Thor", TypeGroup.AVANGERS , "Fernando");
         playerRepository.save(player);
     }
     
