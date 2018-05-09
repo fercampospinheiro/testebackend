@@ -101,6 +101,18 @@
                 font-size: 14px;
             }
 
+            .modal-body .form-horizontal .col-sm-2,
+            .modal-body .form-horizontal .col-sm-10 {
+                width: 100%
+            }
+
+            .modal-body .form-horizontal .control-label {
+                text-align: left;
+            }
+            .modal-body .form-horizontal .col-sm-offset-2 {
+                margin-left: 15px;
+            }
+
     </style><title>Jogadores UOL</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
@@ -137,6 +149,15 @@
         var OnSuccess = function(data){
             populateData("#entry-template","tbody",data.List);
         }
+       
+       var OnSuccess = function (data) {
+            if(data && data.status !== 200 ) return;
+        
+            $(".success-register").show();
+            $("#form-player").trigger("reset");
+        }
+
+
         var OnError = function (data) { 
             $("tbody").append("<tr><td class='alert alert-info'><strong>Não foi possivel carregar a lista de jogadores!</strong></td><tr>")
         }
@@ -171,7 +192,73 @@
             callUrl("/api/v1/players","Get");
         
     });
-        
+
+       
+        var OnError = function (data) {
+            $(".error-register").show();
+        };
+
+        var populateData = function (template, tag, data) {
+            var source = $(template).html();
+            var template = Handlebars.compile(source);
+            var html = template(data);
+            $(tag).append(html);
+        };
+
+        var callUrl = function (url, json, httpMethod) {
+            $.ajax(url, {
+                type: httpMethod,
+                dataType: 'json',
+                data: '{"Player":' + JSON.stringify(json) + '}',
+                contentType: 'application/json; charset=utf-8',
+                error: OnError,
+                statusCode: {
+                    201: function () {
+                        $(".success-register").show();
+                    },
+                    208: function () {
+                        var $info =  $(".info-register");
+                        var $strong = $info.find("strong");
+                        $strong.empty();
+                        $strong.append("Ops! :? Já existe um jogador com este email");
+                        $info.show();   
+                    }
+                }
+            });
+        }
+
+
+
+        var hideMessage = function () {
+            $(".error-register").hide();
+            $(".success-register").hide();
+            $(".info-register").hide();
+        };
+
+        function getFormData(data) {
+            var unindexed_array = data;
+            var indexed_array = {};
+
+            $.map(unindexed_array, function (n, i) {
+                indexed_array[n['name']] = n['value'];
+            });
+
+            return indexed_array;
+        }
+
+        $(document).ready(function () {
+
+            hideMessage();
+
+            $("#form-player").submit(function (e) {
+                e.preventDefault();
+                var form = $(this);
+                var action = form.attr("action");
+                var data = form.serializeArray();
+                var url = "/api/v1/player";
+                callUrl(url, getFormData(data), "POST");
+            });
+        });        
 
         
     </script>
@@ -218,7 +305,7 @@
                         </div>
                     </div>
                     <div class="content-footer">
-                        <label><button type="button" onclick="location.href = '/player/form'" class="btn btn-default">Cadastrar jogador</button></label>
+                        <label><button type="button" data-toggle="modal" data-target="#myModalHorizontal" class="btn btn-default">Cadastrar jogador</button></label>
                         
                         <div class="alert alert-danger error-register">
                             <strong>Ops! houve um erro :( Não conseguimos carregar os jogadores </strong>.
@@ -232,6 +319,81 @@
             </section>
 
         </div>
+
+        <!-- Modal -->
+    <div class="modal fade" id="myModalHorizontal" tabindex="-1" role="dialog" 
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="close" 
+                       data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Fechar</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Cadastro de Jogador
+                    </h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    
+                    <form class="form-horizontal" role="form" id="form-player">
+                      <div class="form-group">
+                        <label  class="col-sm-2 control-label"
+                                  for="inputName">Nome</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="name" class="form-control" 
+                            id="inputName" placeholder="Nome"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label  class="col-sm-2 control-label"
+                                  for="inputEmail3">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" 
+                            id="inputEmail3" placeholder="Email"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label"
+                              for="inputPhone" >Telefone</label>
+                        <div class="col-sm-10">
+                            <input type="phone" name="phone" class="form-control"
+                                id="inputPhone" placeholder="Telefone"/>
+                        </div>
+                      </div>
+                     <div class="form-group">
+                        <label class="col-sm-2 control-label"
+                              for="inputPlayerGroup1" >Os Vingadores</label>
+                        <div class="col-sm-10">
+                            <input type="radio" id="inputPlayerGroup1" name="playerGroup" value="JUSTICE_LEAGUE" checked="" />
+                        </div>
+                      </div>
+                       <div class="form-group">
+                        <label class="col-sm-2 control-label"
+                              for="inputPlayerGroup2" >Liga da Justiça</label>
+                        <div class="col-sm-10">
+                            <input id="inputPlayerGroup2" type="radio" name="playerGroup" value="AVANGERS"/>
+                        </div>
+                      </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">
+                                Voltar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id ="cadastrar">
+                        Cadastra
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+
 </body>
 </html>

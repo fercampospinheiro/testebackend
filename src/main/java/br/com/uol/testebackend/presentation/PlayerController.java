@@ -18,7 +18,7 @@ public class PlayerController {
      * Carrega o fromulario da lista de jogadores
      * 
      */
-    @GetMapping("/players/form")
+    @GetMapping("/players")
     public String playersForm(){
         return "player/players";
     }

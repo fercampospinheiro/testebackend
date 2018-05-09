@@ -18,7 +18,7 @@ public class SecurityWebConfig extends WebSecurityConfigurerAdapter {
     http
         .authorizeRequests()
             .antMatchers("/resources/**", "/webjars/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/","/api/v1/players","/players/form","/api/v1/player/**" , "/player/form").permitAll()
+            .antMatchers(HttpMethod.GET, "/","/api/v1/players","/players","/api/v1/player/**" , "/player/form").permitAll()
             .antMatchers(HttpMethod.POST, "/api/v1/player").permitAll()
             .antMatchers(HttpMethod.PUT, "/api/v1/player").permitAll()
             .antMatchers(HttpMethod.DELETE, "/api/v1/player").permitAll()
