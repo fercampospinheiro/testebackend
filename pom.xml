@@ -104,11 +104,16 @@
         <scope>test</scope>
     </dependency>
     
+    <!-- BIBLIOTECAS APACHE-->
     <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
     </dependency>
-    
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+    </dependency>
+
 
     <!-- JSTL -->
     <dependency>

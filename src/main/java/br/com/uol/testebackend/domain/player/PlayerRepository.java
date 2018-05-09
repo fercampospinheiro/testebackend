@@ -2,6 +2,7 @@ package br.com.uol.testebackend.domain.player;
 
 import br.com.uol.testebackend.domain.codename.Codename;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,4 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface PlayerRepository extends JpaRepository<Player,Integer>{
     @Query("select new br.com.uol.testebackend.domain.codename.Codename(p.codename) from Player p group by p.codename ")
     List<Codename> searchAllAlreadyUsed();
+    
+    Optional<Player> findByEmail(String email);
 }

@@ -10,8 +10,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  *Enum que representa os tipo de grupos de jogadores
  */
-public enum TypeGroup {
-    AVANGERS("Os Vingadores","vingadores.json", MediaType.APPLICATION_JSON) {
+ public enum TypeGroup {    AVANGERS("Os Vingadores","vingadores.json", MediaType.APPLICATION_JSON) {
 
         @Override
         public PlayerGroup getPlayerGroup(Map<MediaType,RestTemplate> mapResttemplate) {

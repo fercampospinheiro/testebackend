@@ -27,24 +27,22 @@ public class Player implements Serializable {
     private Integer idPlayer;
     
     @NotNull
-    @NotBlank
+    @NotBlank(message = "Informe o email")
     @Size(max = 200)
-    @Email
+    @Email(message ="Email inválido" )
     @Column(unique=true)
     private String email;
     
     @NotNull
-    @NotBlank
+    @NotBlank(message = "Informe o nome")
     @Size(max = 200)
     private String name;
     
     @NotNull
-    @NotBlank
+    @NotBlank(message = "Informe o telefone")
     @Size(max = 12)
     private String phone;
     
-    @NotNull
-    @NotBlank
     @Size(max = 200)
     private String codename;
     
@@ -90,4 +88,25 @@ public class Player implements Serializable {
     public String getName() {
         return name;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setPlayerGroup(TypeGroup playerGroup) {
+        this.playerGroup = playerGroup;
+    }
+    
+    public String getPlayerGroupName() {
+        return playerGroup.getName();
+    }
+    
 }

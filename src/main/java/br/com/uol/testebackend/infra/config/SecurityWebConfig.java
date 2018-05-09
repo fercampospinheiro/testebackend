@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 /**
  *
- * Configurações de seguranca da aplicação com spring boot
+ * Configurações de seguranca da aplicação com spring security
  */
 @EnableWebSecurity
 public class SecurityWebConfig extends WebSecurityConfigurerAdapter {
@@ -18,10 +18,11 @@ public class SecurityWebConfig extends WebSecurityConfigurerAdapter {
     http
         .authorizeRequests()
             .antMatchers("/resources/**", "/webjars/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/","/players","/players/form","/player/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/player").permitAll()
-            .antMatchers(HttpMethod.PUT, "/player").permitAll()
-            .antMatchers(HttpMethod.DELETE, "/player").permitAll()
+            .antMatchers(HttpMethod.GET, "/","/api/v1/players","/players/form","/api/v1/player/**" , "/player/form").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/v1/player").permitAll()
+            .antMatchers(HttpMethod.PUT, "/api/v1/player").permitAll()
+            .antMatchers(HttpMethod.DELETE, "/api/v1/player").permitAll()
+            .antMatchers(HttpMethod.PATCH, "/api/v1/player").permitAll()
             .anyRequest().authenticated()
         .and()
         .httpBasic();
@@ -29,7 +30,10 @@ public class SecurityWebConfig extends WebSecurityConfigurerAdapter {
  
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers(HttpMethod.POST,"/player/**");
+        web.ignoring().antMatchers(HttpMethod.POST,"/api/v1/player/**")
+                .antMatchers(HttpMethod.PUT, "/api/v1/player/**")
+                .antMatchers(HttpMethod.DELETE, "/api/v1/player/**")
+                .antMatchers(HttpMethod.PATCH, "/api/v1/player/**");
     }
   
   
