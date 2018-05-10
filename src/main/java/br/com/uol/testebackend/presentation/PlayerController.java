@@ -11,7 +11,7 @@ public class PlayerController {
     
     @GetMapping("/")
     public String home(){
-        return playerForm();
+        return playersForm();
     }
     
     /**
@@ -23,12 +23,5 @@ public class PlayerController {
         return "player/players";
     }
     
-    /**
-     * Carrega o fromulario de cadastro de jogador novo
-     */
-    @GetMapping("/player/form")
-    public String playerForm(){
-        return "player/player-register";
-    }
 
 }
