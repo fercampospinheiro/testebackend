@@ -9,7 +9,7 @@
 <a href="https://www3.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html">Java 1.8 </a> ,
 <a href="https://git-scm.com/book/pt-br/v1/Primeiros-passos-Instalando-Git">Git</a> (Se não for baixar o ZIP)
 
-**Obtedo o projeto**
+**Obtnedo o projeto**
 
 **GITHUB
 
@@ -37,3 +37,5 @@ Basta acessaor a url > localhota:9090/player/form
 
 COMANDO
 >mvn spring-boot:run
+
+
