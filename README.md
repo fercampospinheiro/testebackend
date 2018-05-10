@@ -10,25 +10,32 @@ Para rodar o projeto na sua máquina é necessário seguir os passos abaixo:
 <a href="https://www3.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html">Java 1.8 </a> ,
 <a href="https://git-scm.com/book/pt-br/v1/Primeiros-passos-Instalando-Git">Git</a> (Se não for baixar o ZIP)
 
+	>Se não tiver o  maven instalado e o java 1.8 não poderá executar o MVN no terminal e plugin
+	>spring-boot
+	> mvn -version.
+	>java -version  
+
+
 **Obtendo o projeto**
 
 O projeto pode ser acesso de 2 maneiras:
 
 **GITHUB
 
-Acesse o github e copie o link do repositório a seguir.
+Acesse o github e copie o link do repositório a seguir. 
 ```
 git clone https://github.com/fercampospinheiro/testebackend.git
 ```
+Abra o terminal e execute o comando git.
 
-**Baxaindo o zip**
+**Zip**
 
-Acesse <a href="https://github.com/fercampospinheiro/testebackend">testebackend</a> e clique em Clone e download 
+Acesse <a href="https://github.com/fercampospinheiro/testebackend">testebackend</a> e clique em "Clone e download".
+Para projeto zip, descompacte o mesmo em um diretório. 
 		
 **Executando o projeto**
 
-Se baixou o zip, descompacte o mesmo em um diretório. 
-Navegue via Terminal(Linux ou Mac) ou CMD(windows) e navegue até a pasta do projeto descompactado ou clonado,
+Navegue via Terminal(Linux ou Mac) ou CMD(windows) até a pasta do projeto,
 execute o comando do maven pra gerar o pacote tipo jar do projeto.
 
 Obs: 	Se não tiver o  maven instalado e o java 1.8 não poderá dar o comando a seguir. 
