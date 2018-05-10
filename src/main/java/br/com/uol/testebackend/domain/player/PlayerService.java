@@ -1,7 +1,12 @@
 package br.com.uol.testebackend.domain.player;
 
+import br.com.uol.testebackend.domain.codename.Codename;
+import br.com.uol.testebackend.domain.codename.CodenameService;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import static org.apache.commons.lang3.StringUtils.*;
 import org.springframework.stereotype.Service;
@@ -16,10 +21,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlayerService {
     
     @Inject private PlayerRepository playerRepository;
+    @Inject private CodenameService codenameService;
     
-    
+    /**
+     *  Atualiza o jogador
+     *  Se o jogador muda de grupo tenta encontrar um novo codinome
+     *  Do contrario mantem o codinome que já possuia
+     * @param player
+     * @return
+     */
     @Transactional(readOnly = false ,propagation = Propagation.REQUIRED)
-    public Optional<Player> registerOrUpdate(Player player){
+    public Optional<Player> registerOrUpdate(Player player) {
+        
+        Optional<Player> previous = playerRepository.findById(player.getIdPlayer());
+        
+        if(previous.isPresent()){
+            if(!previous.get().getPlayerGroup().equals(player.getPlayerGroup())){
+                try {
+                    
+                    Optional<Codename> codenameAvaliable = codenameService.getCodenameAvaliable(player.getPlayerGroup());
+                    codenameAvaliable.ifPresent(c -> player.setCodename(c.getCodinome()));
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(PlayerService.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
         return Optional.ofNullable(playerRepository.save(player));
     } 
     

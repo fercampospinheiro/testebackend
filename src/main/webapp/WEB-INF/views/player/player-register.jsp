@@ -13,56 +13,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.js"></script>
 
     <script>
-
-        var OnSuccess = function (data) {
-            if(data && data.status !== 200 ) return;
         
-            $(".success-register").show();
-            $("#form-player").trigger("reset");
-        }
-        
-        var OnError = function (data) {
-            $(".error-register").show();
-        };
-
-        var populateData = function (template, tag, data) {
-            var source = $(template).html();
-            var template = Handlebars.compile(source);
-            var html = template(data);
-            $(tag).append(html);
-        };
-
-        var callUrl = function (url, json, httpMethod) {
-            $.ajax(url, {
-                type: httpMethod,
-                dataType: 'json',
-                data: '{"Player":' + JSON.stringify(json) + '}',
-                contentType: 'application/json; charset=utf-8',
-                error: OnError,
-                statusCode: {
-                    201: function () {
-                        $(".success-register").show();
-                    },
-                    208: function () {
-                        var $info =  $(".info-register");
-                        var $strong = $info.find("strong");
-                        $strong.empty();
-                        $strong.append("Ops! :? Já existe um jogador com este email");
-                        $info.show();   
-                    }
-                }
-            });
-        }
-
-
-
-        var hideMessage = function () {
-            $(".error-register").hide();
-            $(".success-register").hide();
-            $(".info-register").hide();
-        };
-
-        function getFormData(data) {
+    var hideMessages = function () {
+        $(".error-register").hide();
+        $(".success-register").hide();
+        $(".info-register").hide();
+    };
+    
+    //Funcao que verifica qual a acao foi chamada e que fazer no retorno 
+    var actionExecute = function(action,calbackExecute){    
+        switch (action) {
+            case PLAYER_REGISTER:
+                calbackExecute();
+              [break;]
+            case PLAYER_LIST:
+                calbackExecute();
+              [break;]
+            case PLAYER_REMOVE:
+                calbackExecute();
+              [break;]
+          case PLAYER_REMOVE:
+                calbackExecute();    
+              [break;]
+          }
+      }
+     
+    //Obtem o array de dados do formulario
+    function getFormData(data) {
             var unindexed_array = data;
             var indexed_array = {};
 
@@ -71,23 +48,105 @@
             });
 
             return indexed_array;
-        }
+    }
+    
+    //Funcao que pega o tenplate do Handlebar e injeta informacoes nele
+    var populateHandleBarTemplate = function (template, injectTag, data) {
+        var gridPlayerTemplate = 
+        var source = $(template).html();
+        var template = Handlebars.compile(source);
+        var html = template(data);
+        $(tag).append(html);
+    };
 
-        $(document).ready(function () {
-
-            hideMessage();
-
+    var createMessage = function(message $typeMessage){
+        var $info =  $typeMessage;
+        var $strong = $info.find("strong");
+        $strong.empty();
+        $strong.append(message);
+        $info.show(); 
+    } 
+    
+    $(document).ready(function () {
+            hideMessages();
+            
+            //Objetos que represem enum e que fazem conforme o tipo de codigo
+            var PLAYER_REGISTER = {
+                var CODE_200 = function (){ createMessage("Ops! :( Jogador criado com sucesso",$(".success-register")); }
+                var CODE_201 = function (){ createMessage("Ops! :( Jogador criado com sucesso",$(".success-register")); }
+                var CODE_204 = function (){ console.log("Codigo 204 - Não trata este codigono registro de jogado");}
+                var CODE_208 = function (){ createMessage("Ops! :? Já existe um jogador com este email",$(".info-register"));}
+                var ERROR_MSG =  function(){ createMessage("Ops! :( Houve um erro não foi possivel te cadastrar.",$(".error-register"));}
+            }
+            
+            var PLAYER_LIST = {
+                var CODE_200 = function (){ console.log("Codigo 200 - Lista de jogadores recuperada com sucesso"); }
+                var CODE_201 = function (){ console.log("Codigo 201 - Lista de jogadores recuperada com sucesso"); }
+                var CODE_204 = function (){ createMessage("Ops! :/ Não possui nenhum jogador cadastrado",$(".info-register");}
+                var CODE_208 = function (){ console.log("Codigo 208 - Nao trata este codigo na lista de jogadores ");}
+                var ERROR_MSG =  function(){ createMessage("Ops! :( Houve um erro ao carrega a lista de jogadores",$(".error-register"));}
+            }
+            
+            var PLAYER_REMOVE = {
+                var CODE_200 = function (){ $(".success-register").show(); }
+                var CODE_201 = function (){ $(".success-register").show(); }
+                var CODE_204 = function (){ $(".success-register").show(); }
+                var CODE_208 = function (){ $(".success-register").show(); 
+                var ERROR_MSG =  function(){ createMessage("Ops! :( Houve um erro ao remover o jogador",$(".error-register"));}
+            }
+            
+            var PLAYER_EDIT = {
+                var CODE_200 = function (){ $(".success-register").show(); }
+                var CODE_201 = function (){ $(".success-register").show(); }
+                var CODE_204 = function (){ $(".success-register").show(); }
+                var CODE_208 = function (){ $(".success-register").show(); }
+                var ERROR_MSG =  function(){ createMessage("Ops! :( Houve um erro ao editar o jogador",$(".error-register"));}
+            }
+            
+            var urlPlayerList = "/api/v1/players";
+            callResourceUrl(urlPlayerList, "", "POST");
+            
+            //Envia informacoes pra o registro do jogador
             $("#form-player").submit(function (e) {
                 e.preventDefault();
                 var form = $(this);
-                var action = form.attr("action");
                 var data = form.serializeArray();
                 var url = "/api/v1/player";
-                callUrl(url, getFormData(data), "POST");
+                callResourceUrl(url, getFormData(data), "POST");
             });
+            
+            
         });
-    </script>
 
+        var callResourceUrl = function (url, json, httpMethod , action) {
+            var jsonData = "{}";
+            
+            if(action !== PLAYER_LIST){ jsonData = '{"Player":' + JSON.stringify(json) + '}'};
+   
+            $.ajax(url, {
+                type: httpMethod,
+                dataType: 'json',
+                data: jsonData,
+                contentType: 'application/json; charset=utf-8',
+                error: action.ERROR_MSG,
+                statusCode: {
+                    200: function (data){
+                        actionExcute(action, action.CODE_200());
+                    },
+                    201: function () {
+                        actionExcute(action, action.CODE_201());
+                    },
+                    204: function (){
+                        actionExcute(action, action.CODE_204());
+                    },
+                    208: function () {
+                        actionExcute(action, action.CODE_208());
+                    }                    
+                }
+            });
+        }
+
+    </script>
 
     <div class="container">
         <div class="row">
@@ -108,8 +167,8 @@
                                             <input type="text" name="name" class="form-control" id="name"/>
                                         </div>
                                         <div class="form-group">
-                                            <label for="email">Email:</label>
-                                            <input type="email" name="email" class="form-control" id="email">
+                                            <label for="mail">Email:</label>
+                                            <input type="email" name="email" class="form-control" id="mail">
                                         </div>
                                         <div class="form-group">
                                             <label for="phone">Telefone:</label>
@@ -135,7 +194,7 @@
                     </div>
                     <div class="content-footer">
                         <div class="alert alert-danger error-register">
-                            <strong>Ops! houve um erro :( Não podemos registrar você. </strong>.
+                            <strong></strong>.
                         </div>
                         <div class="alert alert-success success-register">
                             <strong>Ehh! :) Você se registrou com sucesso</strong>

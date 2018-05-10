@@ -68,6 +68,7 @@ public class PlayerRestController {
     @PutMapping(value = "/player", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Player> update(@RequestBody @Valid Player player) throws IOException {
         
+        
         return playerService.registerOrUpdate(player)
                 .map( p -> {
                     return new ResponseEntity<>(p,HttpStatus.OK);

@@ -12,6 +12,19 @@
                 font-family: 'Open Sans', sans-serif;
                 color: #353535;
             }
+            body,
+            .modal-open .page-container,
+            .modal-open .page-container .navbar-fixed-top,
+            .modal-open .modal-container {
+                    overflow-y: scroll;
+            }
+
+            @media (max-width: 979px) {
+                    .modal-open .page-container .navbar-fixed-top{
+                            overflow-y: visible;
+                    }
+            }
+            
             .content h1 {
                 text-align: center;
             }
@@ -112,6 +125,20 @@
             .modal-body .form-horizontal .col-sm-offset-2 {
                 margin-left: 15px;
             }
+            
+            body,
+            .modal-open .page-container,
+            .modal-open .page-container .navbar-fixed-top,
+            .modal-open .modal-container {
+                    overflow-y: scroll;
+            }
+
+            @media (max-width: 979px) {
+                    .modal-open .page-container .navbar-fixed-top{
+                            overflow-y: visible;
+                    }
+            }
+            
 
     </style><title>Jogadores UOL</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -122,120 +149,32 @@
   
     <script>
         
-        var hideMessage = function () {
-            $(".error-register").hide();
-            $(".info-register").hide();
-        };
+  
     
-    
-    $(document).ready(function () {
-        hideMessage();
-        
-        
-        $('.ckbox label').on('click', function () {
-            $(this).parents('tr').toggleClass('selected');
-        });
-
-        $('.btn-filter').on('click', function () {
-            var $target = $(this).data('target');
-            if ($target != 'all') {
-                $('.table tr').css('display', 'none');
-                $('.table tr[data-status="' + $target + '"]').fadeIn('slow');
-            } else {
-                $('.table tr').css('display', 'none').fadeIn('slow');
-            }
-        });
-            
-        var OnSuccess = function(data){
-            populateData("#entry-template","tbody",data.List);
-        }
-       
-       var OnSuccess = function (data) {
-            if(data && data.status !== 200 ) return;
-        
-            $(".success-register").show();
-            $("#form-player").trigger("reset");
-        }
-
-
-        var OnError = function (data) { 
-            $("tbody").append("<tr><td class='alert alert-info'><strong>Não foi possivel carregar a lista de jogadores!</strong></td><tr>")
-        }
-
-        var populateData =  function(template,tag,data){
-            var source   = $(template).html();
-            var template = Handlebars.compile(source);
-            var html = template(data);
-            $(tag).append(html);
-        }
-            
-        var callUrl = function (url, httpMethod) {
-            $.ajax(url, {
-                type: httpMethod,
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                error: OnError,
-                statusCode: {
-                    204: function (){
-                        var $info =  $(".info-register");
-                        var $strong = $info.find("strong");
-                        $strong.append("Ops! :/ Não possui nenhum jogador cadastrado");
-                        $info.show();
-                    },
-                    200: function (data){
-                        populateData("#entry-template","tbody",data.List);
-                    }
-                }
-                });
-        }
-        
-            callUrl("/api/v1/players","Get");
-        
-    });
-
-       
-        var OnError = function (data) {
-            $(".error-register").show();
-        };
-
-        var populateData = function (template, tag, data) {
-            var source = $(template).html();
-            var template = Handlebars.compile(source);
-            var html = template(data);
-            $(tag).append(html);
-        };
-
-        var callUrl = function (url, json, httpMethod) {
-            $.ajax(url, {
-                type: httpMethod,
-                dataType: 'json',
-                data: '{"Player":' + JSON.stringify(json) + '}',
-                contentType: 'application/json; charset=utf-8',
-                error: OnError,
-                statusCode: {
-                    201: function () {
-                        $(".success-register").show();
-                    },
-                    208: function () {
-                        var $info =  $(".info-register");
-                        var $strong = $info.find("strong");
-                        $strong.empty();
-                        $strong.append("Ops! :? Já existe um jogador com este email");
-                        $info.show();   
-                    }
-                }
-            });
-        }
-
-
-
-        var hideMessage = function () {
-            $(".error-register").hide();
-            $(".success-register").hide();
-            $(".info-register").hide();
-        };
-
-        function getFormData(data) {
+    //Funcao que verifica qual a acao foi chamada e que fazer no retorno 
+    var actionExecute = function(action,code,data){    
+        switch (action.ACTION) {
+            case MSG_REGISTER.ACTION:
+                createMessage(code.MSG, code.TYPE , action.LOCAL_MSG);
+                loadGrid(data, code.isPopulateGrid);
+              break;
+            case MSG_LIST.ACTION:
+                createMessage(code.MSG, code.TYPE,action.LOCAL_MSG);
+                loadGrid(data, code.isPopulateGrid);
+              break;
+            case MSG_REMOVE.ACTION:
+                createMessage(code.MSG, code.TYPE,action.LOCAL_MSG);
+                loadGrid(data, code.isPopulateGrid);
+              break;
+          case MSG_EDIT.ACTION:
+                createMessage(code.MSG, code.TYPE,action.LOCAL_MSG);
+                loadGrid(data, code.isPopulateGrid);
+              break;
+          }
+      }
+     
+    //Obtem o array de dados do formulario
+    function getFormData(data) {
             var unindexed_array = data;
             var indexed_array = {};
 
@@ -244,28 +183,214 @@
             });
 
             return indexed_array;
+    }
+    
+    //Funcao que pega o tenplate do Handlebar e injeta informacoes nele
+    var populateHandleBarTemplate = function (template, injectTag, data) {
+        var source = $(template).html();
+        var template = Handlebars.compile(source);
+        var html = template(data);
+        $(injectTag).empty();
+        $(injectTag).append(html);
+    };
+    
+    var callListPlayers = function(){  
+        var urlPlayerList = "/api/v1/players";
+        callResourceUrl(urlPlayerList, "", "GET",MSG_LIST); 
+    }
+
+    var loadGrid =  function(data,isLoad){
+        if(!data || !data.List) return;
+        if(isLoad) populateHandleBarTemplate("#grid-player-template","tbody",data.List);
+    }
+
+    var createMessage = function(message,classMessage,localMsg){
+        if(classMessage === "console") {
+            console.log(message);
+            return;
         }
+        
+        hideMessages();  
+        
+        if(localMsg === "FORM") classMessage = ".form" + classMessage;
+        
+        var $message =  $(classMessage);
+        var $strong = $message.find("strong");
+        $strong.empty();
+        $strong.append(message);
+        $message.show(); 
+        console.log("message " + message);
+        setTimeout(function () {
+		$($message).hide(); 
+	}, 2500);
+    } ;
+    
+    $(document).ready(function () {
+            var TYPE_MESSAGE = {
+                SUCCESS : ".alert-success",
+                INFO : ".alert-info" ,
+                ERROR :".alert-danger" ,
+                WARN : ".alert-warning",
+                CONSOLE: "console"
+            }
+                 
+            window.hideMessages = function () {
+                $(TYPE_MESSAGE.SUCCESS).hide();
+                $(TYPE_MESSAGE.INFO).hide();
+                $(TYPE_MESSAGE.ERROR).hide();
+                $(TYPE_MESSAGE.WARN).hide();
+                $('.form '+TYPE_MESSAGE.SUCCESS).hide();
+                $('.form '+TYPE_MESSAGE.INFO).hide();
+                $('.form '+TYPE_MESSAGE.ERROR).hide();
+                $('.form '+TYPE_MESSAGE.WARN).hide();
+            };
 
-        $(document).ready(function () {
-
-            hideMessage();
-
+            hideMessages();
+            
+            //Enum que tratam cada codigo http e que fazem conforme o tipo de codigo
+            MSG_REGISTER = {
+                CODE_200 : { MSG : "Ops! :( Jogador criado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS, isPopulateGrid : true},
+                CODE_201 : { MSG : "Ops! :( Jogador criado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS,isPopulateGrid : true},
+                CODE_204 : { MSG : "Codigo 204 - Não trata este codigono registro de jogado", TYPE: TYPE_MESSAGE.CONSOLE,isPopulateGrid : false},
+                CODE_208 :{ MSG : "Ops! :? Já existe um jogador com este email", TYPE: TYPE_MESSAGE.INFO,isPopulateGrid : false}, 
+                CODE_412 :{ MSG : "Todos os codinomes foram utilizados.Tente outra lista", TYPE: TYPE_MESSAGE.WARN , isPopulateGrid : false},
+                ERROR_MSG: { MSG : "Ops! :( Houve um erro não foi possivel te cadastrar.", TYPE: TYPE_MESSAGE.ERROR,isPopulateGrid : false}, 
+                ACTION: "REGISTER",
+                LOCAL_MSG: "FORM"
+            }
+            
+            MSG_LIST = {
+                CODE_200 : { MSG : "Codigo 200 - Lista de jogadores recuperada com sucesso", TYPE: TYPE_MESSAGE.CONSOLE, isPopulateGrid : true},
+                CODE_201 : { MSG : "Codigo 201 - Lista de jogadores recuperada com sucesso", TYPE: TYPE_MESSAGE.CONSOLE, isPopulateGrid : true},
+                CODE_204 : { MSG : "Ops! :/ Não possui nenhum jogador cadastrado", TYPE: TYPE_MESSAGE.INFO, isPopulateGrid : false},
+                CODE_208 :{ MSG : "Codigo 208 - Nao trata este codigo na lista de jogadores", TYPE: TYPE_MESSAGE.CONSOLE, isPopulateGrid : false}, 
+                ERROR_MSG: { MSG : "Ops! :( Houve um erro ao carrega a lista de jogadores", TYPE: TYPE_MESSAGE.ERROR},  
+                ACTION: "LIST",
+                LOCAL_MSG: "GRID"
+            }
+            MSG_REMOVE = {
+                CODE_200 : { MSG : "Jogador removido comsucesso", TYPE: TYPE_MESSAGE.SUCCESS, isPopulateGrid : true},
+                CODE_201 : { MSG : "Codigo 201 - Mensagem de remocao", TYPE: TYPE_MESSAGE.SUCCESS, isPopulateGrid : false},
+                CODE_204 : { MSG : "Codigo 204 - Mensagem de remocao", TYPE: TYPE_MESSAGE.CONSOLE,isPopulateGrid : false},
+                CODE_208 :{ MSG : "Codigo 208 - Mensagem de remocao", TYPE: TYPE_MESSAGE.CONSOLE, isPopulateGrid : false}, 
+                ERROR_MSG: { MSG : "Ops! :( Houve um erro ao remover o jogador", TYPE: TYPE_MESSAGE.ERROR}, 
+                ACTION: "REMOVE",
+                LOCAL_MSG: "GRID"
+            }           
+            MSG_EDIT = {
+                CODE_200 : { MSG : "Ops! :( Jogador alterado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS , isPopulateGrid : true},
+                CODE_201 : { MSG : "Ops! :( Jogador alterado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS , isPopulateGrid : true},
+                CODE_204 : { MSG : "Codigo 204 - Não trata este codigo na alateracao de jogador", TYPE: TYPE_MESSAGE.CONSOLE , isPopulateGrid : false},
+                CODE_208 :{ MSG : "Ops! :? Já existe um jogador com este email", TYPE: TYPE_MESSAGE.INFO , isPopulateGrid : false}, 
+                CODE_412 :{ MSG : "Todos os codinomes foram utilizados.Tente outra lista", TYPE: TYPE_MESSAGE.WARN , isPopulateGrid : false}, 
+                ERROR_MSG: { MSG : "Ops! :( Houve um erro não foi possivel alterar o jogador.", TYPE: TYPE_MESSAGE.ERROR}, 
+                ACTION: "EDIT",
+                LOCAL_MSG: "FORM"
+            }           
+            
+            callListPlayers();  
+            
+            //Envia informacoes pra o registro do jogador
             $("#form-player").submit(function (e) {
                 e.preventDefault();
                 var form = $(this);
-                var action = form.attr("action");
                 var data = form.serializeArray();
                 var url = "/api/v1/player";
-                callUrl(url, getFormData(data), "POST");
+                var method = $("#form-player").attr("action");
+                
+                var MSG = method === "POST"? MSG_REGISTER : MSG_EDIT;
+                
+                callResourceUrl(url, getFormData(data), method , MSG);
             });
-        });        
+            
+            //Botao voltar --> carrega a lista novamente
+            $("#back-grid").click(function (){
+                callListPlayers();       
+                $("#form-player")[0].reset();
+               $("#salvar").empty().html("Cadastrar").prop("id","cadastrar");
+               $("#form-player").attr("action","POST");
+            })
+            
+   
+            removePlayer = function (idPlayer){
+                var urlRemovePlayer = "/api/v1/player";
+                var params = {idPlayer : idPlayer};
+                callResourceUrl(urlRemovePlayer, params, "DELETE",MSG_REMOVE);
+                callListPlayers();
+            }  
+            
+            populateFormPlayer = function (idPLayer){
+                hideMessages();
+                $("#form-player")[0].reset()
+                $('#loadModalPlayerForm').trigger('click');
+                
+                var params = {
+                    idPlayer : $("#idPlayer" + idPLayer).val(),
+                    name: $("#player_name"+idPLayer).val(),
+                    codename: $("#player_codename"+idPLayer).val(),
+                    phone: $("#player_phone"+idPLayer).val(),
+                    email: $("#player_email"+idPLayer).val(),
+                    playerGroup: $("#player_group_name"+idPLayer).val()
+                
+                 };
+   
+                $("#inputIdpPlayer").prop("value",params.idPlayer);
+                $("#inputCodename").prop("value",params.codename);
+                $("#inputName").prop("value",params.name);
+                $("#inputPhone").prop("value",params.phone);
+                $("#inputEmail").prop("value",params.email);
+                
+                if(params.playerGroup === "AVANGERS"){
+                    $("#inputPlayerGroup2").prop('checked', true);
+                }else{
+                    $("#inputPlayerGroup1").prop('checked', true);
+                }
+                
+                $("#myModalLabel").empty().html("Cadastro do " +"<Strong>"+ params.codename+"</Strong>");
+                $("#cadastrar").empty().html("Salvar").prop("id","salvar");
+                $("#form-player").attr("action","PUT");
+  
+            }
+            
+        });
 
+        var callResourceUrl = function (url, json, httpMethod , action) {
+            var jsonData = "";
+            
+            if(action.ACTION !== MSG_LIST.ACTION){ jsonData = '{"Player":' + JSON.stringify(json) + '}'};
+   
+            $.ajax(url, {
+                type: httpMethod,
+                dataType: 'json',
+                data: jsonData,
+                contentType: 'application/json; charset=utf-8',
+                error: action.ERROR_MSG,
+                statusCode: {
+                    200: function (data){
+                        actionExecute(action, action.CODE_200,data);
+                    },
+                    201: function (data) {
+                        actionExecute(action, action.CODE_201,data);
+                    },
+                    204: function (data){
+                        actionExecute(action, action.CODE_204,data);
+                    },
+                    208: function (data) {
+                        actionExecute(action, action.CODE_208,data);
+                    }, 
+                    412 :function (data) {
+                        actionExecute(action, action.CODE_412,data);
+                    } 
+                }
+            });
+        } 
+        
         
     </script>
     </head>
     <body>
     
-    <script id="entry-template" type="text/x-handlebars-template">
+    <script id="grid-player-template" type="text/x-handlebars-template">
         {{#each this}}
         <tr>
             <td>
@@ -273,13 +398,32 @@
                 <a href="#" class="pull-left">
                     <img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo">
                 </a>
-                <div class="media-body">
-                    <span class="pull-right glyphicon glyphicon-trash"><a class="" href=""><a></span>
-                    <h4 class="title">
-                        {{name}}
-                        <span class="pull-right codename">{{codename}}</span>
-                    </h4>
-                    <p class="summary">{{email}} {{phone}} <span class="pull-right playerGoup"> {{playerGroupName}}</span></p>
+                <div class="media-body">   
+                        <span class="pull-right ">
+                        <input type="hidden" id="idPlayer{{idPlayer}}" name="idPlayer" value="{{idPlayer}}"/> 
+                        <input type="hidden" id="player_name{{idPlayer}}" name="name" value="{{name}}"/>
+                        <input type="hidden" id="player_phone{{idPlayer}}" name="phone" value="{{phone}}"/>
+                        <input type="hidden" id="player_codename{{idPlayer}}" name="codename" value="{{codename}}"/>
+                        <input type="hidden" id="player_email{{idPlayer}}" name="email" value="{{email}}"/>
+                        <input type="hidden" id="player_group_name{{idPlayer}}" name="playerGroup" value="{{playerGroup}}"/>
+                        
+                            <a href="#" onclick= "removePlayer({{idPlayer}});return false;" id="removePlayer"> 
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </span>
+                    <a href="#" onclick="populateFormPlayer({{idPlayer}});return false;">
+                        <h4 class="title">
+                            {{name}}  <span class="glyphicon glyphicon-pencil"></span>
+                            <span class="pull-right codename">{{codename}}</span>
+                        </h4>
+                    
+                        <p class="summary">
+                            {{email}} {{phone}}
+                            <span class="pull-right playerGoup"> 
+                            {{playerGroupName}}
+                            </span>
+                        </p>
+                    </a>
                 </div>
             </div>
         </td>
@@ -305,22 +449,27 @@
                         </div>
                     </div>
                     <div class="content-footer">
-                        <label><button type="button" data-toggle="modal" data-target="#myModalHorizontal" class="btn btn-default">Cadastrar jogador</button></label>
+                        <label><button type="button" data-toggle="modal" data-target="#myModalHorizontal" id="loadModalPlayerForm" class="btn btn-default">Cadastrar jogador</button></label>
                         
-                        <div class="alert alert-danger error-register">
-                            <strong>Ops! houve um erro :( Não conseguimos carregar os jogadores </strong>.
+                        <div class="alert alert-danger">
+                            <strong></strong>.
                         </div>
-                        <div class="alert alert-info info-register">
+                        <div class="alert alert-success">
                             <strong></strong>
                         </div>
-                        
+                        <div class="alert alert-info">
+                            <strong></strong>
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong></strong> 
+                        </div>
                     </div>
                 </div>
             </section>
 
         </div>
 
-        <!-- Modal -->
+    <!-- Modal do cadstro de jogador -->
     <div class="modal fade" id="myModalHorizontal" tabindex="-1" role="dialog" 
          aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -340,8 +489,11 @@
                 <!-- Modal Body -->
                 <div class="modal-body">
                     
-                    <form class="form-horizontal" role="form" id="form-player">
-                      <div class="form-group">
+                    <form class="form-horizontal" role="form" action="POST" id="form-player">
+                    <input type="hidden" id ="inputIdpPlayer"  name="idPlayer" value=""/>  
+                    <input type="hidden" id ="inputCodename"  name="codename" value=""/> 
+                    
+                    <div class="form-group">
                         <label  class="col-sm-2 control-label"
                                   for="inputName">Nome</label>
                         <div class="col-sm-10">
@@ -351,10 +503,10 @@
                       </div>
                       <div class="form-group">
                         <label  class="col-sm-2 control-label"
-                                  for="inputEmail3">Email</label>
+                                  for="inputEmail">Email</label>
                         <div class="col-sm-10">
                             <input type="email" class="form-control" 
-                            id="inputEmail3" placeholder="Email"/>
+                            id="inputEmail" name="email" placeholder="Email"/>
                         </div>
                       </div>
                       <div class="form-group">
@@ -367,23 +519,35 @@
                       </div>
                      <div class="form-group">
                         <label class="col-sm-2 control-label"
-                              for="inputPlayerGroup1" >Os Vingadores</label>
+                              for="inputPlayerGroup1" >Liga da Justiça</label>
                         <div class="col-sm-10">
                             <input type="radio" id="inputPlayerGroup1" name="playerGroup" value="JUSTICE_LEAGUE" checked="" />
                         </div>
                       </div>
                        <div class="form-group">
                         <label class="col-sm-2 control-label"
-                              for="inputPlayerGroup2" >Liga da Justiça</label>
+                              for="inputPlayerGroup2" >Os Vingadores</label>
                         <div class="col-sm-10">
                             <input id="inputPlayerGroup2" type="radio" name="playerGroup" value="AVANGERS"/>
                         </div>
                       </div>
                 </div>
-                
+                <div class="alert form alert-danger">
+                    <strong></strong>.
+                </div>
+                <div class="alert form alert-success">
+                    <strong></strong>
+                </div>
+                <div class="alert form alert-info">
+                    <strong></strong>
+                </div>
+                <div class="alert form alert-warning">
+                    <strong></strong> 
+                </div>
+
                 <!-- Modal Footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
+                    <button type="button" class="btn btn-default" id="back-grid"
                             data-dismiss="modal">
                                 Voltar
                     </button>
@@ -394,6 +558,6 @@
             </div>
         </div>
     </div>
-
+ 
 </body>
 </html>

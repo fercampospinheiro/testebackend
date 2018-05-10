@@ -70,7 +70,7 @@ public class Player implements Serializable {
     }
 
     public Integer getIdPlayer() {
-        return idPlayer;
+        return idPlayer == null? 0 : idPlayer;
     }
 
     public String getEmail() {
