@@ -10,7 +10,7 @@ Para rodar o projeto na sua máquina é necessário seguir os passos abaixo:
 <a href="https://www3.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html">Java 1.8 </a> ,
 <a href="https://git-scm.com/book/pt-br/v1/Primeiros-passos-Instalando-Git">Git</a> (Se não for baixar o ZIP)
 
-**Obtnedo o projeto**
+**Obtendo o projeto**
 
 O projeto pode ser acesso de 2 maneiras:
 
