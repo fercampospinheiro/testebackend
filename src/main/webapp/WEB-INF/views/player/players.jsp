@@ -164,7 +164,7 @@
               break;
             case MSG_REMOVE.ACTION:
                 createMessage(code.MSG, code.TYPE,action.LOCAL_MSG);
-                loadGrid(data, code.isPopulateGrid);
+                callListPlayers();
               break;
           case MSG_EDIT.ACTION:
                 createMessage(code.MSG, code.TYPE,action.LOCAL_MSG);
@@ -189,13 +189,18 @@
     var populateHandleBarTemplate = function (template, injectTag, data) {
         var source = $(template).html();
         var template = Handlebars.compile(source);
-        var html = template(data);
-        $(injectTag).empty();
+        var html = data? template(data) : "";
+        resetGrid();
         $(injectTag).append(html);
     };
     
+    var resetGrid = function(){
+        $("tbody").empty();
+    }
+
     var callListPlayers = function(){  
         var urlPlayerList = "/api/v1/players";
+        resetGrid();
         callResourceUrl(urlPlayerList, "", "GET",MSG_LIST); 
     }
 
@@ -269,8 +274,8 @@
                 LOCAL_MSG: "GRID"
             }
             MSG_REMOVE = {
-                CODE_200 : { MSG : "Jogador removido comsucesso", TYPE: TYPE_MESSAGE.SUCCESS, isPopulateGrid : true},
-                CODE_201 : { MSG : "Codigo 201 - Mensagem de remocao", TYPE: TYPE_MESSAGE.SUCCESS, isPopulateGrid : false},
+                CODE_200 : { MSG : "Jogador removido com sucesso", TYPE: TYPE_MESSAGE.SUCCESS, isPopulateGrid : true},
+                CODE_201 : { MSG : "Codigo 201 - Mensagem de remocao", TYPE: TYPE_MESSAGE.SUCCESS, isPopulateGrid : true},
                 CODE_204 : { MSG : "Codigo 204 - Mensagem de remocao", TYPE: TYPE_MESSAGE.CONSOLE,isPopulateGrid : false},
                 CODE_208 :{ MSG : "Codigo 208 - Mensagem de remocao", TYPE: TYPE_MESSAGE.CONSOLE, isPopulateGrid : false}, 
                 ERROR_MSG: { MSG : "Ops! :( Houve um erro ao remover o jogador", TYPE: TYPE_MESSAGE.ERROR}, 
@@ -278,10 +283,10 @@
                 LOCAL_MSG: "GRID"
             }           
             MSG_EDIT = {
-                CODE_200 : { MSG : "Ops! :( Jogador alterado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS , isPopulateGrid : true},
-                CODE_201 : { MSG : "Ops! :( Jogador alterado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS , isPopulateGrid : true},
+                CODE_200 : { MSG : "Ops! :D Jogador alterado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS , isPopulateGrid : true},
+                CODE_201 : { MSG : "Ops! :D Jogador alterado com sucesso", TYPE: TYPE_MESSAGE.SUCCESS , isPopulateGrid : true},
                 CODE_204 : { MSG : "Codigo 204 - Não trata este codigo na alateracao de jogador", TYPE: TYPE_MESSAGE.CONSOLE , isPopulateGrid : false},
-                CODE_208 :{ MSG : "Ops! :? Já existe um jogador com este email", TYPE: TYPE_MESSAGE.INFO , isPopulateGrid : false}, 
+                CODE_208 :{ MSG : "Ops! =/ Já existe um jogador com este email", TYPE: TYPE_MESSAGE.INFO , isPopulateGrid : false}, 
                 CODE_412 :{ MSG : "Todos os codinomes foram utilizados.Tente outra lista", TYPE: TYPE_MESSAGE.WARN , isPopulateGrid : false}, 
                 ERROR_MSG: { MSG : "Ops! :( Houve um erro não foi possivel alterar o jogador.", TYPE: TYPE_MESSAGE.ERROR}, 
                 ACTION: "EDIT",
@@ -316,7 +321,6 @@
                 var urlRemovePlayer = "/api/v1/player";
                 var params = {idPlayer : idPlayer};
                 callResourceUrl(urlRemovePlayer, params, "DELETE",MSG_REMOVE);
-                callListPlayers();
             }  
             
             populateFormPlayer = function (idPLayer){
