@@ -43,13 +43,11 @@ Navegue via Terminal(Linux ou Mac) ou CMD(windows) até a pasta do projeto.
 mvn spring-boot:run
 ```
 
-O projeto está em uma single page na url. A porta pode ser alterada no applicatio.properties.
+O projeto está em uma single page na url a seguir. A porta pode ser alterada no application.properties.
 ```
 localhota:9090/players
 ```
 
-
-COMANDO
 
 
 
