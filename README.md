@@ -36,6 +36,7 @@ O Comando a seguir subirá a aplicação na porta >localhota:9090
 Basta acessaor a url > localhota:9090/player/form
 
 COMANDO
->mvn spring-boot:run
-
+```
+mvn spring-boot:run
+```
 
